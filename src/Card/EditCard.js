@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
-import { readCard, readDeck, updateCard } from '../../utils/api';
+import { readCard, readDeck, updateCard } from '../utils/api';
 import CardForm from './CardForm';
 
-function CardEdit({ title }) {
+function EditCard({ title }) {
   const history = useHistory();
   const { deckId, cardId } = useParams();
-
   const [card, setCard] = useState({ front: '', back: '' });
   const [deck, setDeck] = useState({ cards: [] });
 
@@ -57,4 +56,4 @@ function CardEdit({ title }) {
   );
 }
 
-export default CardEdit;
+export default EditCard;

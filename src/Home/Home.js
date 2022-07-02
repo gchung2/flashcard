@@ -1,5 +1,5 @@
 import React from 'react';
-import DeckList from '../Deck/List';
+import DeckList from '../Deck/DeckList';
 
 function Home() {
   return (

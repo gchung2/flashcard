@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
-import { createCard, readDeck } from '../../utils/api';
-import CardForm from './CardForm';
+import { readDeck, updateDeck } from '../utils/api';
+import DeckForm from './DeckForm';
 
-function CardCreate() {
+function EditDeck() {
   const history = useHistory();
   const { deckId } = useParams();
-  const [deck, setDeck] = useState({ cards: [] });
+
+  const [deck, setDeck] = useState({ name: '', description: '' });
 
   useEffect(() => {
     readDeck(deckId).then(setDeck);
   }, [deckId]);
 
-  function submitHandler(card) {
-    createCard(deckId, card);
+  function submitHandler(updatedDeck) {
+    updateDeck(updatedDeck).then((savedDeck) =>
+      history.push(`/decks/${savedDeck.id}`)
+    );
   }
 
-  function doneHandler() {
-    history.push(`/decks/${deckId}`);
+  function cancel() {
+    history.goBack();
   }
+
+  const child = deck.id ? (
+    <DeckForm onCancel={cancel} onSubmit={submitHandler} initialState={deck} />
+  ) : (
+    <p>Loading...</p>
+  );
+
   return (
     <>
       <nav aria-label="breadcrumb">
@@ -32,18 +42,14 @@ function CardCreate() {
             <Link to={`/decks/${deckId}`}>{deck.name}</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
-            Add Card
+            Edit Deck
           </li>
         </ol>
       </nav>
-      <CardForm
-        deckName={deck.name}
-        initialState={deck}
-        onSubmit={submitHandler}
-        onDone={doneHandler}
-      />
+      <h1>Edit Deck</h1>
+      {child}
     </>
   );
 }
 
-export default CardCreate;
+export default EditDeck;

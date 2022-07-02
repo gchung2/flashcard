@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { createDeck } from '../../utils/api';
+import { createDeck } from '../utils/api';
 import DeckForm from './DeckForm';
 
-function DeckCreate() {
+function CreateDeck() {
   const history = useHistory();
 
   function submitHandler(deck) {
@@ -36,4 +36,4 @@ function DeckCreate() {
   );
 }
 
-export default DeckCreate;
+export default CreateDeck;
