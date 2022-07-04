@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Route, Switch, Link, useHistory, useParams } from "react-router-dom";
 import { listDecks, deleteDeck } from "../utils/api/index";
 import DeckView from "./DeckView";
-import Study from "../Study/StudyIndex";
-import EditDeck from "./EditDeck";
-import CreateDeck from "./CreateDeck";
-import Deck from "./Deck";
+import DeckStudy from "../Study/DeckStudy";
+import EditDeck from "../Deck/EditDeck";
+import CreateDeck from "../Deck/CreateDeck";
+import Deck from "../Deck/DeckIndex";
 import EditCard from "../Card/EditCard";
-import CardCreate from "../Card/CreateCard";
-import NotFound from "../Layout/NotFound";
 import CreateCard from "../Card/CreateCard";
+import NotFound from "../Layout/NotFound";
+import EditDeck from "../Deck/EditDeck";
 
 function Decks() {
   const { deckId } = useParams();
@@ -74,11 +74,11 @@ function Decks() {
         </Route>
 
         <Route path="/decks/:deckId/cards/new">
-          <CardCreate />
+          <CreateCard />
         </Route>
 
         <Route path="/decks/:deckId/study">
-          <Study />
+          <DeckStudy />
         </Route>
 
         <Route path="/decks/:deckId/edit">
