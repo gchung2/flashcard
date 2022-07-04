@@ -4,48 +4,75 @@ import { readDeck, updateDeck } from '../utils/api';
 import DeckForm from './DeckForm';
 
 function EditDeck() {
-  const [ deck, setDeck ] = useState({ name: '', description: '' })
   const history = useHistory();
   const { deckId } = useParams();
 
+  const formReset = {
+    id: "",
+    name: "",
+    description: "",
+  };
+
+  const [existingDeck, setExistingDeck] = useState(formReset);
+
   useEffect(() => {
-      readDeck(deckId)
-      .then(data => setDeck(data))
-  },[deckId]);
+    async function getFlashDeck() {
+      try {
+        const deckFromApi = await readDeck(deckId);
+        setExistingDeck(deckFromApi);
+      } catch (error) {
+        throw new Error(`API readDeck(${deckId}) had an error: ${error}`);
+      }
+    }
+    getFlashDeck();
+  }, [deckId]);
 
-  function submitHandler(updatedDeck) {
-      updateDeck(updatedDeck).then(() => {
-          history.push(`/decks/${deckId}`)
-      })
+  const handleFormChange = ({ target }) => {
+    setExistingDeck({
+      ...existingDeck,
+      [target.id]: target.value,
+    });
+  };
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    await updateDeck({
+      ...existingDeck,
+      id: existingDeck.id,
+      name: existingDeck.name,
+      description: existingDeck.description,
+    });
+    history.goBack();
   }
 
-  function cancel() {
-      history.goBack();
-  }
+  let ogDeckName = existingDeck?.name ? existingDeck?.name : "loading...";
 
-  const editForm = deck.id ? (
-      <DeckForm onCancel={cancel} onSubmit={submitHandler} initialState={deck} />
-  ) : (
-      <h5>Loading...</h5>
-  )
+  const breadcrumb = (
+    <nav aria-label="breadcrumb">
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
+          <Link to="/">Home</Link>
+        </li>
+        <li className="breadcrumb-item">
+          <Link to={`/decks/${deckId}`}>{ogDeckName}</Link>
+        </li>
+        <li className="breadcrumb-item active" aria-current="page">
+          Edit Deck
+        </li>
+      </ol>
+    </nav>
+  );
 
   return (
-      <div>
-        <nav aria-label='breadcrumb'>
-          <ol className='breadcrumb'>
-            <li className='breadcrumb-item'>
-              <Link to='/'>
-                <span className='oi oi-home' /> Home
-              </Link>
-            </li>
-            <li className='breadcrumb-item active' aria-current='page'>
-              Edit Deck
-            </li>
-          </ol>
-        </nav>
-        <h3>Edit Deck</h3>
-        {editForm}
-      </div>
+    <div>
+      {breadcrumb}
+      <DeckForm
+        handleSubmit={handleSubmit}
+        handleFormChange={handleFormChange}
+        existingDeck={existingDeck}
+      />
+    </div>
   );
 }
+
 export default EditDeck;
