@@ -9,7 +9,6 @@ import Deck from "../Deck/DeckIndex";
 import EditCard from "../Card/EditCard";
 import CreateCard from "../Card/CreateCard";
 import NotFound from "../Layout/NotFound";
-import EditDeck from "../Deck/EditDeck";
 
 function Decks() {
   const { deckId } = useParams();
