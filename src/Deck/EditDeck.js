@@ -3,8 +3,7 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { readDeck, updateDeck } from '../utils/api';
 import DeckForm from './DeckForm';
 
-function EditDeck() {
-  const history = useHistory();
+function EditDeck() {const history = useHistory();
   const { deckId } = useParams();
 
   const formReset = {
@@ -74,5 +73,6 @@ function EditDeck() {
     </div>
   );
 }
+
 
 export default EditDeck;

@@ -1,7 +1,6 @@
-
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { deleteDeck, readDeck } from '../utils/api';
+import React, { useEffect, useState } from "react";
+import { useParams, useHistory } from "react-router-dom";
+import { readDeck, deleteCard } from "../utils/api/index";
 import CardList from '../Card/CardList';
 import DeckButtons from "./DeckButtons";
 

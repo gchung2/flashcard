@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { createCard, readDeck } from '../utils/api';
 import CardForm from './CardForm';
 
-function CreateCard() {
+function CardCreate() {
   const { deckId } = useParams();
 
   const formReset = {
@@ -22,9 +22,7 @@ function CreateCard() {
   useEffect(() => {
     async function getFlashDeck() {
       try {
-        // console.log(`API readDeck(${deckId}) ran`);
         const deckFromApi = await readDeck(deckId);
-        // console.log("deckFromApi", deckFromApi);
         setFlashDeck(deckFromApi);
       } catch (error) {
         throw new Error(`API readDeck(${deckId}) had an error: ${error}`);
@@ -81,4 +79,4 @@ function CreateCard() {
 
 
 
-export default CreateCard;
+export default CardCreate;
