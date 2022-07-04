@@ -4,52 +4,48 @@ import { readDeck, updateDeck } from '../utils/api';
 import DeckForm from './DeckForm';
 
 function EditDeck() {
+  const [ deck, setDeck ] = useState({ name: '', description: '' })
   const history = useHistory();
   const { deckId } = useParams();
 
-  const [deck, setDeck] = useState({ name: '', description: '' });
-
   useEffect(() => {
-    readDeck(deckId).then(setDeck);
-  }, [deckId]);
+      readDeck(deckId)
+      .then(data => setDeck(data))
+  },[deckId]);
 
   function submitHandler(updatedDeck) {
-    updateDeck(updatedDeck).then((savedDeck) =>
-      history.push(`/decks/${savedDeck.id}`)
-    );
+      updateDeck(updatedDeck).then(() => {
+          history.push(`/decks/${deckId}`)
+      })
   }
 
   function cancel() {
-    history.goBack();
+      history.goBack();
   }
 
-  const child = deck.id ? (
-    <DeckForm onCancel={cancel} onSubmit={submitHandler} initialState={deck} />
+  const editForm = deck.id ? (
+      <DeckForm onCancel={cancel} onSubmit={submitHandler} initialState={deck} />
   ) : (
-    <p>Loading...</p>
-  );
+      <h5>Loading...</h5>
+  )
 
   return (
-    <>
-      <nav aria-label="breadcrumb">
-        <ol className="breadcrumb">
-          <li className="breadcrumb-item">
-            <Link to="/">
-              <span className="oi oi-home" /> Home
-            </Link>
-          </li>
-          <li className="breadcrumb-item">
-            <Link to={`/decks/${deckId}`}>{deck.name}</Link>
-          </li>
-          <li className="breadcrumb-item active" aria-current="page">
-            Edit Deck
-          </li>
-        </ol>
-      </nav>
-      <h1>Edit Deck</h1>
-      {child}
-    </>
+      <div>
+        <nav aria-label='breadcrumb'>
+          <ol className='breadcrumb'>
+            <li className='breadcrumb-item'>
+              <Link to='/'>
+                <span className='oi oi-home' /> Home
+              </Link>
+            </li>
+            <li className='breadcrumb-item active' aria-current='page'>
+              Edit Deck
+            </li>
+          </ol>
+        </nav>
+        <h3>Edit Deck</h3>
+        {editForm}
+      </div>
   );
 }
-
 export default EditDeck;

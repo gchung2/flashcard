@@ -3,57 +3,87 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { readCard, readDeck, updateCard } from '../utils/api';
 import CardForm from './CardForm';
 
-function EditCard({ title }) {
-  const history = useHistory();
-  const { deckId, cardId } = useParams();
-  const [card, setCard] = useState({ front: '', back: '' });
-  const [deck, setDeck] = useState({ cards: [] });
+function EditCard() {
+    const history = useHistory();
+    const { deckId, cardId } = useParams();
+  
+    const cardReset = {
+        id: cardId,
+        front: "",
+        back: "",
+        deckId: deckId,
+      };
+    
+      const deckReset = {
+        id: deckId,
+        name: "",
+        description: "",
+      };
+    
+      const [flashDeck, setFlashDeck] = useState(deckReset);
+      const [flashCard, setFlashCard] = useState(cardReset);
+    
+      useEffect(() => {
+        async function getFlashDeck() {
+          try {
+            const deckFromApi = await readDeck(deckId);
+            setFlashDeck(deckFromApi);
+    
 
-  useEffect(() => {
-    readDeck(deckId).then(setDeck);
-    readCard(cardId).then(setCard);
-  }, [deckId, cardId]);
-
-  function submitHandler(card) {
-    updateCard(card).then(doneHandler);
-  }
-
-  function doneHandler() {
-    history.push(`/decks/${deck.id}`);
-  }
-
-  const child = card.id ? (
-    <CardForm
-      onSubmit={submitHandler}
-      onDone={doneHandler}
-      deckName={deck.name}
-      initialState={card}
-      doneButtonLabel="Cancel"
-    />
-  ) : (
-    <p>Loading...</p>
-  );
-  return (
-    <>
-      <nav aria-label="breadcrumb">
-        <ol className="breadcrumb">
-          <li className="breadcrumb-item">
-            <Link to="/">
-              <span className="oi oi-home" /> Home
-            </Link>
-          </li>
-          <li className="breadcrumb-item">
-            <Link to={`/decks/${deckId}`}>Deck {deck.name}</Link>
-          </li>
-          <li className="breadcrumb-item active" aria-current="page">
-            Edit Card {cardId}
-          </li>
-        </ol>
-      </nav>
-      <h2>Edit Card</h2>
-      {child}
-    </>
-  );
-}
-
+            const cardFromApi = await readCard(cardId);
+            setFlashCard(cardFromApi);
+          } catch (error) {
+            throw new Error(`API readDeck(${deckId}) had an error: ${error}`);
+          }
+        }
+        getFlashDeck();
+      }, [deckId, cardId]);
+    
+      const handleFormChange = ({ target }) => {
+        setFlashCard({
+          ...flashCard,
+          [target.id]: target.value,
+        });
+      };
+    
+      async function handleSubmit(event) {
+        event.preventDefault();
+        await updateCard({
+          ...flashCard,
+          front: flashCard.front,
+          back: flashCard.back,
+        });
+        history.goBack();
+      }
+    
+      let deckName = flashDeck?.name ? flashDeck?.name : "loading...";
+    
+      const breadcrumb = (
+        <nav aria-label="breadcrumb">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link to="/">Home</Link>
+            </li>
+            <li className="breadcrumb-item">
+              <Link to={`/decks/${deckId}`}>{deckName}</Link>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              Edit Card {cardId}
+            </li>
+          </ol>
+        </nav>
+      );
+    
+      return (
+        <div>
+          {breadcrumb}
+          <CardForm
+            handleSubmit={handleSubmit}
+            handleFormChange={handleFormChange}
+            flashCard={flashCard}
+          />
+        </div>
+      );
+    }
+    
 export default EditCard;

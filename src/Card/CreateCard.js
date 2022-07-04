@@ -1,49 +1,84 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { createCard, readDeck } from '../utils/api';
 import CardForm from './CardForm';
 
 function CreateCard() {
-  const history = useHistory();
   const { deckId } = useParams();
-  const [deck, setDeck] = useState({ cards: [] });
+
+  const formReset = {
+    front: "",
+    back: "",
+  };
+
+  const deckReset = {
+    id: deckId,
+    name: "",
+    description: "",
+  };
+
+  const [flashDeck, setFlashDeck] = useState(deckReset);
 
   useEffect(() => {
-    readDeck(deckId).then(setDeck);
+    async function getFlashDeck() {
+      try {
+        // console.log(`API readDeck(${deckId}) ran`);
+        const deckFromApi = await readDeck(deckId);
+        // console.log("deckFromApi", deckFromApi);
+        setFlashDeck(deckFromApi);
+      } catch (error) {
+        throw new Error(`API readDeck(${deckId}) had an error: ${error}`);
+      }
+    }
+    getFlashDeck();
   }, [deckId]);
 
-  function submitHandler(card) {
-    createCard(deckId, card);
+  const [newCard, setNewCard] = useState(formReset);
+
+  const handleFormChange = ({ target }) => {
+    setNewCard({
+      ...newCard,
+      [target.id]: target.value,
+    });
+  };
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    await createCard(deckId, newCard);
+    setNewCard(formReset);
   }
 
-  function doneHandler() {
-    history.push(`/decks/${deckId}`);
-  }
+  let deckName = flashDeck?.name ? flashDeck?.name : "loading...";
+
+  const breadcrumb = (
+    <nav aria-label="breadcrumb">
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
+          <Link to="/">Home</Link>
+        </li>
+        <li className="breadcrumb-item">
+          <Link to={`/decks/${deckId}`}>{deckName}</Link>
+        </li>
+        <li className="breadcrumb-item active" aria-current="page">
+          Add Card
+        </li>
+      </ol>
+    </nav>
+  );
+
   return (
-    <>
-      <nav aria-label="breadcrumb">
-        <ol className="breadcrumb">
-          <li className="breadcrumb-item">
-            <Link to="/">
-              <span className="oi oi-home" /> Home
-            </Link>
-          </li>
-          <li className="breadcrumb-item">
-            <Link to={`/decks/${deckId}`}>{deck.name}</Link>
-          </li>
-          <li className="breadcrumb-item active" aria-current="page">
-            Add Card
-          </li>
-        </ol>
-      </nav>
+    <div>
+      {breadcrumb}
+      <h2>{deckName}: Add Card</h2>
       <CardForm
-        deckName={deck.name}
-        initialState={deck}
-        onSubmit={submitHandler}
-        onDone={doneHandler}
+        handleSubmit={handleSubmit}
+        handleFormChange={handleFormChange}
+        flashCard={newCard}
       />
-    </>
+    </div>
   );
 }
+
+
 
 export default CreateCard;
