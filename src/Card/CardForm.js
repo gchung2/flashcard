@@ -12,7 +12,7 @@ function CardForm({ flashCard, handleFormChange, handleSubmit }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="front">Front</label>
-            <textarea
+            <textarea required
               type="text"
               className="form-control"
               id="front"
@@ -23,7 +23,7 @@ function CardForm({ flashCard, handleFormChange, handleSubmit }) {
           </div>
           <div className="form-group">
             <label htmlFor="back">Back</label>
-            <textarea
+            <textarea required
               type="text"
               className="form-control"
               id="back"
